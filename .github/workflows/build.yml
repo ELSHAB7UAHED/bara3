@@ -10,24 +10,55 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 🧱 تحميل الكود من المستودع
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # ⚙️ إعداد Arduino CLI
       - name: Setup Arduino CLI
         uses: arduino/setup-arduino-cli@v2
 
+      # 📦 تثبيت لوحات ESP32
       - name: Install ESP32 board
         run: |
           arduino-cli core update-index
           arduino-cli core install esp32:esp32
 
+      # 📚 تثبيت كل المكتبات المطلوبة
+      - name: Install required libraries
+        run: |
+          arduino-cli lib install "WiFi"
+          arduino-cli lib install "WebServer"
+          arduino-cli lib install "EEPROM"
+          arduino-cli lib install "ArduinoJson"
+          arduino-cli lib install "ESPAsyncWebServer"
+          arduino-cli lib install "AsyncTCP"
+          arduino-cli lib install "FS"
+          arduino-cli lib install "SPIFFS"
+          arduino-cli lib install "Update"
+          arduino-cli lib install "DNSServer"
+          arduino-cli lib install "WiFiClientSecure"
+          arduino-cli lib install "PubSubClient"
+          arduino-cli lib install "HTTPClient"
+
+      # 🏗️ بناء المشروع وتحويله إلى BIN
       - name: Build firmware
         run: |
           mkdir -p build
           arduino-cli compile --fqbn esp32:esp32:esp32 --output-dir build .
 
+      # 📤 رفع ملف الـ .bin الناتج كـ Artifact
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: bara-firmware
+          name: ESP32-firmware
           path: build
+
+      # 🚀 (اختياري) إنشاء Release تلقائي على GitHub
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: build/*.bin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
