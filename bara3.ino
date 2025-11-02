@@ -11,15 +11,14 @@
  */
 
 #include <WiFi.h>
-#include <WebServer.h>
 #include <ArduinoJson.h>
 #include <ESPAsyncWebServer.h>
+#include <AsyncTCP.h>
 #include <SPIFFS.h>
 #include <FS.h>
 #include <DNSServer.h>
 #include <WiFiManager.h>
 #include <Ticker.h>
-#include <FS.h>
 
 // Configuration
 const char* AP_NAME = "bara";
@@ -1210,6 +1209,7 @@ void setup() {
   // Initialize WebSocket
   ws.onEvent(onWsEvent);
   server.addHandler(&ws);
+  server.begin();
   
   // Setup server routes
   server.on("/", handleRoot);
