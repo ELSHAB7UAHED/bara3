@@ -133,7 +133,7 @@ void performWiFiScan() {
     net.rssi = WiFi.RSSI(i);
     net.channel = WiFi.channel(i);
     net.encryption = WiFi.encryptionType(i);
-    net.hidden = WiFi.isHidden(i);
+    net.hidden = false;
     net.lastSeen = millis();
     
     // Find existing network or add new
